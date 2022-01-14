@@ -52,6 +52,8 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+@import "../assets/variables";
+
 .wrapper {
     position: fixed;
     left: 0;
@@ -62,15 +64,15 @@ export default defineComponent({
     display: flex;
     justify-content: center;
     align-items: center;
-    backdrop-filter: blur(2px);
 }
 
 .dialog {
-    background: white;
+    background: $background_darker;
     max-width: 500px;
+    color: #999999;
 
     &__title {
-        background: #333333;
+        background: $background_lighter;
         color: #FFFFFF;
         padding: 0.5rem 0.5rem;
         font-size: 1.5rem;
@@ -99,6 +101,10 @@ export default defineComponent({
             background: #333333;
             color: #FFFFFF;
             cursor: pointer;
+            transition: all 0.2s;
+            &:hover {
+                background: $primary;
+            }
         }
     }
 }

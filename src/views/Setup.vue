@@ -31,6 +31,7 @@ import { useRouter } from "vue-router";
 import SchoolIcon from 'vue-material-design-icons/School.vue';
 import ArrowRight from 'vue-material-design-icons/ArrowRight.vue';
 import { alert } from "@/event";
+import { abortAll } from "@/kamar/api";
 
 export default defineComponent({
     components: { SchoolIcon, ArrowRight },
@@ -49,12 +50,16 @@ export default defineComponent({
             await push({ name: 'Home' })
         }
 
+        abortAll()
+
         return { portalDomain, setPortal }
     }
 })
 </script>
 
 <style scoped lang="scss">
+@import "../assets/variables";
+
 .wrapper {
     height: 100%;
 
@@ -67,15 +72,14 @@ export default defineComponent({
     text-align: center;
 
     &__head {
-        background: #333;
+        background: $background_lighter;
         color: white;
         padding: 1rem 0;
     }
 
     &__body {
-        border: 1px solid #999999;
         padding: 1.5rem 1rem 1rem;
-        background: #FFFFFF;
+        background: $background_darker;
     }
 }
 
@@ -87,6 +91,12 @@ export default defineComponent({
     background: #333333;
     padding: 0.5rem;
     cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+        background: $primary;
+        transform: scale(1.1);
+    }
 }
 
 .title {
@@ -94,7 +104,7 @@ export default defineComponent({
 }
 
 .subtitle {
-    color: #9F9F9F;
+    color: #878787;
     display: block;
 }
 
@@ -104,13 +114,20 @@ export default defineComponent({
     font-size: 1.1em;
     line-height: 1.5;
     max-width: 500px;
-    color: #333333;
+    color: #888;
 }
 
 .input {
     display: block;
-    padding: 0.5rem;
+    padding: 0.8rem 1rem;
     font-size: 1.2rem;
+    background: #333;
+    border: none;
+    color: white;
+
+    &:focus {
+        outline: 2px solid $primary;
+    }
 
     &__wrapper {
         display: flex;
@@ -127,7 +144,7 @@ export default defineComponent({
 
     &__subtext {
         margin-top: 0.5rem;
-        color: #777777;
+        color: #535353;
     }
 
 }

@@ -21,7 +21,10 @@ export default defineComponent({
         const settings = ref<PortalSettings>(DUMMY_DATA.settings)
 
         onMounted(async () => {
-            settings.value = await getSettings()
+            try {
+                settings.value = await getSettings()
+            } catch (e) {
+            }
         })
 
         return { settings }

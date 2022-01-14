@@ -8,6 +8,20 @@ const KJP_HOST: string = process.env.VUE_APP_KJP_HOST
 
 console.log(process.env.VUE_APP_KJP_HOST)
 
+interface AbortMapper {
+    [key: string]: AbortController
+}
+
+const abortMapper: AbortMapper = {}
+
+export function abortAll() {
+    const keys = Object.keys(abortMapper)
+    for (let key of keys) {
+        abortMapper[key].abort()
+        delete abortMapper[key]
+    }
+}
+
 export const DUMMY_DATA = {
     settings: {
         logo_path: '',
@@ -39,10 +53,18 @@ function getHeaders() {
 }
 
 async function send<D>(method: RequestMethod, route: string, body: any = undefined): Promise<D> {
+    let abortController = abortMapper[route];
+    if (!abortController) {
+        abortController = new AbortController()
+        abortMapper[route] = abortController
+    } else {
+        abortController.abort()
+    }
     const response = await fetch(`${ KJP_HOST }/api/${ route }`, {
         method,
         headers: getHeaders(),
-        body
+        body,
+        signal: abortController.signal
     })
     if (!response.ok) {
         console.error('Request failed')

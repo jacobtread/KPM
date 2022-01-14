@@ -43,7 +43,10 @@ export default defineComponent({
             const date = new Date()
             // const formattedDate = format(date, '{dd}/{MM}/{yyyy}')
             const formattedDate = '10/03/2020'
-            response.value = await getNotices(formattedDate)
+            try {
+                response.value = await getNotices(formattedDate)
+            } catch (e) {
+            }
         })
 
         return {
@@ -74,6 +77,8 @@ export default defineComponent({
         display: flex;
         align-items: center;
         justify-content: space-between;
+        background: #333333;
+        color: #e2e2e2;
     }
 
     &__subject {
