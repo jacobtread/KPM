@@ -3,7 +3,7 @@
     <div class="wrapper">
         <form v-on:submit.prevent="setPortal" class="form">
             <div class="form__head">
-                <SchoolIcon size="64" class="icon"/>
+                <SchoolIcon :size="64" class="icon"/>
                 <h1 class="title">KPM</h1>
                 <span class="subtitle">KAMAR PORTAL MODERN</span>
             </div>
@@ -18,7 +18,7 @@
                 </div>
             </div>
             <button type="submit" class="button" title="Press to continue">
-                <ArrowRight size="48"/>
+                <ArrowRight :size="48"/>
             </button>
         </form>
     </div>

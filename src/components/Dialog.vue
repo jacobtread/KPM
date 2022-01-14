@@ -46,10 +46,6 @@ export default defineComponent({
             events.emit('dialog_result', result)
         }
 
-        onMounted(() => {
-            alert('Example Test', 'This is an example test for designing the UI of the dialog system')
-        })
-
         return { open, type, title, message, confirm, cancel, submit }
     }
 })
