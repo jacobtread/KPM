@@ -1,8 +1,8 @@
 import store from "@/store";
 import router from "@/router";
 import { alert } from "@/event";
-import { getCache, setCache } from "@/cache";
-import { safeEncodeDomain } from "@/tools";
+import { ExpiryDuration, getCache, setCache } from "@/cache";
+import { safeEncodeCacheName } from "@/tools";
 
 const KJP_HOST: string = process.env.VUE_APP_KJP_HOST
 
@@ -13,28 +13,12 @@ export const DUMMY_DATA = {
         logo_path: '',
         school_name: '',
         user_access: []
-    } as PortalSettings
-}
-
-export interface PortalSettings {
-    logo_path: string;
-    school_name: string;
-    user_access: UserAccess[];
-}
-
-export interface UserAccess {
-    notices: boolean;
-    events: boolean;
-    details: boolean;
-    timetable: boolean;
-    attendance: boolean;
-    ncea: boolean;
-    results: boolean;
-    groups: boolean;
-    awards: boolean;
-    pastoral: boolean;
-    report_absence_pg: boolean;
-    report_absence: boolean;
+    } as PortalSettings,
+    notices: {
+        date: '',
+        notices: [],
+        meetings: []
+    } as Notices
 }
 
 type RequestMethod = 'GET' | 'POST'
@@ -103,15 +87,76 @@ async function send<D>(method: RequestMethod, route: string, body: any = undefin
             throw 'Unknown Error'
         }
     }
-    return response.json();
+    const json = await response.json();
+    console.log(json)
+    return json
 }
 
-export const getSettings = async () => {
-    const cacheName = safeEncodeDomain(getPortalDomain() + '_settings')
-    let portalSettings: PortalSettings | null = getCache(cacheName)
-    if (portalSettings == null) {
-        portalSettings = await send<PortalSettings>('GET', 'settings')
-        setCache(cacheName, portalSettings, { hours: 3 })
+export async function sendCaching<D>(duration: ExpiryDuration, method: RequestMethod, route: string, body: any = undefined): Promise<D> {
+    const cacheName = safeEncodeCacheName(getPortalDomain() + '_' + route)
+    let response: D | null = getCache(cacheName)
+    if (response == null) {
+        response = await send<D>(method, route, body)
+        setCache(cacheName, response, { hours: 3 })
     }
-    return portalSettings
+    return response as D
 }
+
+export async function sendCachingTransformed<I, O>(duration: ExpiryDuration, transformer: (input: I) => O, method: RequestMethod, route: string, body: any = undefined) {
+    const cacheName = safeEncodeCacheName(getPortalDomain() + '_' + route)
+    let response: O | null = getCache(cacheName)
+    if (response == null) {
+        const rawInput = await send<I>(method, route, body)
+        response = transformer(rawInput)
+        setCache(cacheName, response, { hours: 3 })
+    }
+    return response
+}
+
+export interface PortalSettings {
+    logo_path: string;
+    school_name: string;
+    user_access: UserAccess[];
+}
+
+export interface UserAccess {
+    notices: boolean;
+    events: boolean;
+    details: boolean;
+    timetable: boolean;
+    attendance: boolean;
+    ncea: boolean;
+    results: boolean;
+    groups: boolean;
+    awards: boolean;
+    pastoral: boolean;
+    report_absence_pg: boolean;
+    report_absence: boolean;
+}
+
+export const getSettings = async () => sendCaching<PortalSettings>({ hours: 1 }, 'GET', 'settings')
+
+export interface Notices {
+    date: string;
+    meetings: MeetingNotice[] | null,
+    notices: Notice[] | null
+}
+
+export interface Notice {
+    level: string;
+    subject: string;
+    body: string;
+    teacher: string;
+}
+
+export interface MeetingNotice {
+    level: string;
+    subject: string;
+    body: string;
+    teacher: string;
+    place: string;
+    date: string;
+    time: string;
+}
+
+export const getNotices = async (date: string) => sendCaching<Notices>({ minutes: 15 }, 'GET', 'notices?date=' + date)
