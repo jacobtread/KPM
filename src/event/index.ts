@@ -3,7 +3,8 @@ import { DialogType } from "@/components/Dialog.vue";
 
 type Events = {
     dialog: DialogEventData,
-    dialog_result: boolean
+    dialog_result: boolean,
+    loading: boolean
 }
 
 export interface DialogEventData {

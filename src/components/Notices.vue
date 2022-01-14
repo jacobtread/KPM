@@ -27,6 +27,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import { DUMMY_DATA, getNotices, Notices } from "@/kamar/api";
+import { events } from "@/event";
 
 export default defineComponent({
     setup() {
@@ -38,8 +39,11 @@ export default defineComponent({
             // const formattedDate = format(date, '{dd}/{MM}/{yyyy}')
             const formattedDate = '10/03/2020'
             try {
+                events.emit('loading', true)
                 response.value = await getNotices(formattedDate)
             } catch (e) {
+            } finally {
+                events.emit('loading', false)
             }
         })
 

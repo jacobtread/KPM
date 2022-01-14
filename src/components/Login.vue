@@ -24,6 +24,7 @@
 import { defineComponent, onMounted, ref } from "vue";
 import { DUMMY_DATA, getSettings, PortalSettings } from "@/kamar/api";
 import ArrowRight from 'vue-material-design-icons/ArrowRight.vue';
+import { events } from "@/event";
 
 export default defineComponent({
     components: { ArrowRight },
@@ -31,7 +32,12 @@ export default defineComponent({
 
         const settings = ref<PortalSettings>(DUMMY_DATA.settings)
 
-        onMounted(() => getSettings().then((value) => settings.value = value).catch())
+        onMounted(() => {
+            events.emit('loading', true)
+            getSettings().then((value) => {
+                settings.value = value
+            }).catch().finally(() =>events.emit('loading', false))
+        })
 
         async function login() {
 

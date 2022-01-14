@@ -30,7 +30,15 @@ export const DUMMY_DATA = {
     } as PortalSettings,
     notices: {
         date: '',
-        notices: [],
+        notices: [
+            {
+                level: '',
+                body: '',
+                subject: '',
+                teacher: '',
+                skeleton: true
+            }
+        ],
         meetings: []
     } as Notices
 }
@@ -169,6 +177,7 @@ export interface Notice {
     subject: string;
     body: string;
     teacher: string;
+    skeleton?: boolean;
 }
 
 export interface MeetingNotice {
