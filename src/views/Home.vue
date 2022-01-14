@@ -1,31 +1,23 @@
 <template>
-    <div>
-        <img :src="settings.logo_path" :alt="settings.school_name">
-        <p>{{ settings.school_name }}</p>
+    <div class="body">
+        <Login/>
         <Notices/>
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
-import { useStore } from "vuex";
 import { DUMMY_DATA, getSettings, PortalSettings } from "@/kamar/api";
 import Notices from "@/components/Notices.vue"
+import Login from "@/components/Login.vue";
 
 export default defineComponent({
-    components: { Notices },
+    components: { Login, Notices },
     setup() {
-
-        const store = useStore();
 
         const settings = ref<PortalSettings>(DUMMY_DATA.settings)
 
-        onMounted(async () => {
-            try {
-                settings.value = await getSettings()
-            } catch (e) {
-            }
-        })
+        onMounted(() => getSettings().then((value) => settings.value = value).catch())
 
         return { settings }
     }
@@ -33,5 +25,10 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-
+.body {
+    display: flex;
+    flex-flow: row;
+    height: 100%;
+    width: 100%;
+}
 </style>

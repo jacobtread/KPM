@@ -13,6 +13,7 @@
                     app</p>
                 <div class="input__wrapper">
                     <input class="input" type="text" placeholder="portal.example.school.nz" id="portalURL"
+                           required minlength="1"
                            v-model="portalDomain">
                     <p class="input__subtext">e.g portal.yourschool.school.nz</p>
                 </div>

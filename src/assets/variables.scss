@@ -1,5 +1,6 @@
 $background: #242628;
-$background_lighter: #333333;
-$background_darker: #222222;
+$background_lighter: lighten($background, 6);
+$background_darker: darken($background, 3);
+$background_dark: darken($background, 2);
 
 $primary: #5992e2;
