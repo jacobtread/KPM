@@ -30,6 +30,7 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import SchoolIcon from 'vue-material-design-icons/School.vue';
 import ArrowRight from 'vue-material-design-icons/ArrowRight.vue';
+import { alert } from "@/event";
 
 export default defineComponent({
     components: { SchoolIcon, ArrowRight },
@@ -39,7 +40,12 @@ export default defineComponent({
         const portalDomain = ref('')
 
         async function setPortal() {
-            await store.dispatch('setPortal', portalDomain.value)
+            const domain = portalDomain.value
+            if (domain.length < 1) {
+                alert('Domain Empty', 'You must provided a domain otherwise you wont be able to access KAMAR')
+                return
+            }
+            await store.dispatch('setPortal', domain)
             await push({ name: 'Home' })
         }
 
