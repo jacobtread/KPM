@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import Home from '../views/Home.vue'
-import store from "@/store";
+import { useMainStore } from "@/store";
+import { pinia } from "@/main";
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -28,15 +29,11 @@ const router = createRouter({
     routes
 })
 
+
 router.beforeEach(async (to, from, next) => {
-    if (to.name != 'Setup' && !store.state.portalDomain) {
-        const portalDomain = localStorage.getItem('portal_domain')
-        if (portalDomain) {
-            await store.dispatch('setPortal', portalDomain)
-            next();
-        } else {
-            next({ name: 'Setup' })
-        }
+    const store = useMainStore(pinia)
+    if (to.name != 'Setup' && !store.portalDomain) {
+        next({ name: 'Setup' })
     } else {
         next();
     }

@@ -1,3 +1,29 @@
+<script setup lang="ts">
+import { ref } from "vue";
+import { DialogEventData, DialogType, events } from "@/event";
+
+const open = ref(false)
+const type = ref<DialogType>('alert')
+const title = ref('')
+const message = ref('')
+const confirm = ref('')
+const cancel = ref('')
+
+events.on('dialog', (alert: DialogEventData) => {
+    open.value = true
+    title.value = alert.title
+    message.value = alert.message
+    type.value = alert.type
+    confirm.value = alert.confirm
+    cancel.value = alert.cancel
+});
+
+function submit(result: boolean) {
+    open.value = false
+    events.emit('dialog_result', result)
+}
+
+</script>
 <template>
     <div v-if="open" class="wrapper">
         <div class="dialog">
@@ -15,41 +41,6 @@
         </div>
     </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
-import { alert, DialogEventData, events } from "@/event";
-
-export type DialogType = 'alert' | 'confirm'
-
-export default defineComponent({
-    setup() {
-
-        const open = ref(false)
-        const type = ref<DialogType>('alert')
-        const title = ref('')
-        const message = ref('')
-        const confirm = ref('')
-        const cancel = ref('')
-
-        events.on('dialog', (alert: DialogEventData) => {
-            open.value = true
-            title.value = alert.title
-            message.value = alert.message
-            type.value = alert.type
-            confirm.value = alert.confirm
-            cancel.value = alert.cancel
-        });
-
-        function submit(result: boolean) {
-            open.value = false
-            events.emit('dialog_result', result)
-        }
-
-        return { open, type, title, message, confirm, cancel, submit }
-    }
-})
-</script>
 
 <style scoped lang="scss">
 @import "../assets/variables";
@@ -102,6 +93,7 @@ export default defineComponent({
             color: #FFFFFF;
             cursor: pointer;
             transition: all 0.2s;
+
             &:hover {
                 background: $primary;
             }

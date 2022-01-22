@@ -1,3 +1,10 @@
+<script setup lang="ts">
+import SchoolIcon from 'vue-material-design-icons/School.vue';
+
+defineProps({ loading: Boolean })
+
+</script>
+
 <template>
     <div v-if="loading" class="loader-wrapper">
         <div class="loader">
@@ -8,18 +15,9 @@
     </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
-import SchoolIcon from 'vue-material-design-icons/School.vue';
-
-export default defineComponent({
-    components: { SchoolIcon },
-    props: { loading: Boolean },
-})
-</script>
-
 <style scoped lang="scss">
 @import "../assets/variables";
+
 .loader-wrapper {
     position: absolute;
     left: 0;
@@ -66,10 +64,10 @@ export default defineComponent({
 @keyframes spinner {
     0% {
         transform: rotate(0deg);
-        border-radius:50px;
+        border-radius: 50px;
     }
     50% {
-        border-radius:50px;
+        border-radius: 50px;
     }
     25%,
     75% {

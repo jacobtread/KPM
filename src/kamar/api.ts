@@ -1,8 +1,9 @@
-import store from "@/store";
 import router from "@/router";
 import { alert } from "@/event";
 import { ExpiryDuration, getCache, setCache } from "@/cache";
 import { safeEncodeCacheName } from "@/tools";
+import { useMainStore } from "@/store";
+import { pinia } from "@/main";
 
 const KJP_HOST: string = process.env.VUE_APP_KJP_HOST
 
@@ -46,21 +47,24 @@ export const DUMMY_DATA = {
 type RequestMethod = 'GET' | 'POST'
 
 function getPortalDomain(): string {
-    return store.state.portalDomain as string;
+    const store = useMainStore(pinia)
+    return store.portalDomain as string;
 }
 
 function getHeaders() {
+    const store = useMainStore(pinia)
     const portalDomain = getPortalDomain()
     const headers: any = {
         'Content-Type': 'application/json',
         'X-Portal': `${ portalDomain }`,
     }
-    const authorization = store.state.authorization
+    const authorization = store.authorization
     if (authorization) headers['Authorization'] = authorization
     return headers
 }
 
 async function send<D>(method: RequestMethod, route: string, body: any = undefined): Promise<D> {
+    const store = useMainStore(pinia)
     let abortController = abortMapper[route];
     if (!abortController) {
         abortController = new AbortController()
@@ -68,12 +72,15 @@ async function send<D>(method: RequestMethod, route: string, body: any = undefin
     } else {
         abortController.abort()
     }
-    const response = await fetch(`${ KJP_HOST }/api/${ route }`, {
+    const init: RequestInit = {
         method,
         headers: getHeaders(),
-        body,
         signal: abortController.signal
-    })
+    }
+    if (body != undefined) {
+        init.body = JSON.stringify(body)
+    }
+    const response = await fetch(`${ KJP_HOST }/api/${ route }`, init)
     if (!response.ok) {
         console.error('Request failed')
         console.table({
@@ -87,7 +94,7 @@ async function send<D>(method: RequestMethod, route: string, body: any = undefin
             alert('Invalid access', 'It appears that your access token was not valid to KAMAR, please login again to continue')
             throw 'Invalid access'
         } else if (status == 400) {
-            await store.dispatch('clear')
+            await store.clear()
             await router.push({ name: 'Setup' })
             alert(
                 'Invalid request',
@@ -96,7 +103,7 @@ async function send<D>(method: RequestMethod, route: string, body: any = undefin
             )
             throw 'Invalid request'
         } else if (status == 500) {
-            await store.dispatch('clear')
+            await store.clear()
             await router.push({ name: 'Setup' })
             alert(
                 'Unable to contact KAMAR',
@@ -106,7 +113,7 @@ async function send<D>(method: RequestMethod, route: string, body: any = undefin
             )
             throw 'Invalid KAMAR'
         } else {
-            await store.dispatch('clear')
+            await store.clear()
             await router.push({ name: 'Setup' })
             alert(
                 'Unknown Error',
@@ -191,3 +198,14 @@ export interface MeetingNotice {
 }
 
 export const getNotices = async (date: string) => sendCaching<Notices>({ minutes: 15 }, 'GET', 'notices?date=' + date)
+
+export interface LoginResult {
+    login_level: number;
+    current_student: number;
+    key: string;
+}
+
+export const doLogin = async (username: string, password: string) => send<LoginResult>('POST', 'login', {
+    username,
+    password
+})

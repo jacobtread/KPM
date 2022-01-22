@@ -1,3 +1,32 @@
+<script setup lang="ts">
+import { onMounted, ref } from "vue";
+import { doLogin, DUMMY_DATA, getSettings, LoginResult, PortalSettings } from "@/kamar/api";
+import ArrowRight from 'vue-material-design-icons/ArrowRight.vue';
+import { alert, events } from "@/event";
+import { useMainStore } from "@/store";
+import { pinia } from "@/main";
+
+const store = useMainStore(pinia)
+const settings = ref<PortalSettings>(DUMMY_DATA.settings)
+const username = ref('')
+const password = ref('')
+
+onMounted(() => {
+    events.emit('loading', true)
+    getSettings().then((value) => {
+        settings.value = value
+    }).catch().finally(() => events.emit('loading', false))
+})
+
+async function login() {
+    try {
+        const result: LoginResult = await doLogin(username.value, password.value)
+        await store.setAuthorization(result.key)
+    } catch (e) {
+        alert('Failed to login', 'We were unable to log you in please check that your username and password are correct')
+    }
+}
+</script>
 <template>
     <div class="login">
         <form class="form" @submit.prevent="login">
@@ -6,11 +35,11 @@
             <p class="form__text">Enter your login details to view student specific information</p>
             <label class="input-wrapper">
                 <span class="input__label">Username</span>
-                <input type="text" class="input" required placeholder="Username">
+                <input type="text" class="input" required placeholder="Username" v-model="username">
             </label>
             <label class="input-wrapper">
                 <span class="input__label">Password</span>
-                <input type="text" class="input" required placeholder="Password">
+                <input type="text" class="input" required placeholder="Password" v-model="password">
             </label>
             <router-link :to="{name: 'Setup'}" class="back">Go Back to Setup</router-link>
             <button type="submit" class="button" title="Press to continue">
@@ -19,35 +48,6 @@
         </form>
     </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
-import { DUMMY_DATA, getSettings, PortalSettings } from "@/kamar/api";
-import ArrowRight from 'vue-material-design-icons/ArrowRight.vue';
-import { events } from "@/event";
-
-export default defineComponent({
-    components: { ArrowRight },
-    setup() {
-
-        const settings = ref<PortalSettings>(DUMMY_DATA.settings)
-
-        onMounted(() => {
-            events.emit('loading', true)
-            getSettings().then((value) => {
-                settings.value = value
-            }).catch().finally(() =>events.emit('loading', false))
-        })
-
-        async function login() {
-
-        }
-
-        return { settings, login }
-    }
-})
-</script>
-
 <style scoped lang="scss">
 @import "../assets/variables";
 

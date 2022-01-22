@@ -2,7 +2,10 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import './registerServiceWorker'
 import router from './router'
-import store from './store'
 import "@/assets/global.scss"
+import { createPinia } from "pinia";
+import { loadStore } from "@/cache";
 
-createApp(App).use(store).use(router).mount('#app')
+export const pinia = createPinia()
+createApp(App).use(pinia).use(router).mount('#app')
+loadStore()

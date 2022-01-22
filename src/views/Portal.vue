@@ -1,12 +1,10 @@
-<script setup lang="ts">
-import Notices from "@/components/Notices.vue";
-import Login from "@/components/Login.vue";</script>
+<script setup lang="ts">import Notices from "@/components/Notices.vue";</script>
 <template>
     <div class="body">
-        <Login/>
         <Notices/>
     </div>
 </template>
+
 <style scoped lang="scss">
 .body {
     display: flex;

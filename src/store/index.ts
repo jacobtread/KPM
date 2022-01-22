@@ -1,6 +1,5 @@
-import { createStore } from 'vuex'
 import { PortalSettings } from "@/kamar/api";
-import router from "@/router";
+import { defineStore } from "pinia";
 
 
 interface State {
@@ -9,37 +8,23 @@ interface State {
     settings?: PortalSettings
 }
 
-export default createStore<State>({
-    state: {},
-    mutations: {
-        setPortal(state: State, value: string) {
-            state.portalDomain = value
-        },
-        setAuthorization(state: State, value: string) {
-            state.authorization = value
-        },
-        setSettings(state: State, value: PortalSettings) {
-            state.settings = value
-        }
-    },
+export const useMainStore = defineStore('main', {
+    state: (): State => ({}),
     actions: {
-        setPortal(context, value: string) {
-            context.commit('setPortal', value)
+        setPortal(value: string) {
+            this.portalDomain = value
             localStorage.setItem('portal_domain', value)
         },
-        clear(context, value: string) {
-            context.commit('setPortal', undefined)
-            context.commit('setAuthorization', undefined)
+        setAuthorization(value: string) {
+            this.authorization = value
+            localStorage.setItem('access_token', value)
+        },
+        setSettings(state: State, value: PortalSettings) {
+            this.settings = value
+        },
+        clear() {
+            this.portalDomain = undefined
+            this.authorization = undefined
         }
-    },
-    getters: {
-        portalSettings(state: State): PortalSettings {
-            if (state.settings == undefined) {
-                router.push({ name: 'Home' }).then().catch()
-                throw 'No settings??'
-            }
-            return state.settings as PortalSettings
-        }
-    },
-    modules: {}
+    }
 })

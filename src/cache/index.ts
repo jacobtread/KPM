@@ -1,3 +1,6 @@
+import { useMainStore } from "@/store";
+import { pinia } from "@/main";
+
 interface GlobalCache {
     [name: string]: Cache
 }
@@ -107,4 +110,12 @@ export function loadCache() {
     if (removed > 0) {
         saveCache()
     }
+}
+
+export function loadStore() {
+    const store = useMainStore(pinia)
+    const portalDomain = localStorage.getItem('portal_domain')
+    if (portalDomain != null) store.portalDomain = portalDomain
+    const accessToken = localStorage.getItem('authorization')
+    if (accessToken != null) store.authorization = accessToken
 }

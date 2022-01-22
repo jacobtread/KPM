@@ -1,5 +1,6 @@
 import mitt from 'mitt'
-import { DialogType } from "@/components/Dialog.vue";
+
+export type DialogType = 'alert' | 'confirm'
 
 type Events = {
     dialog: DialogEventData,

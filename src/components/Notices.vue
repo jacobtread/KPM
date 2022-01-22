@@ -1,3 +1,23 @@
+<script setup lang="ts">
+import { onMounted, ref } from "vue";
+import { DUMMY_DATA, getNotices, Notices } from "@/kamar/api";
+import { events } from "@/event";
+
+const data = ref<Notices>(DUMMY_DATA.notices)
+
+onMounted(async () => {
+    const date = new Date()
+    // const formattedDate = format(date, '{dd}/{MM}/{yyyy}')
+    const formattedDate = '10/03/2020'
+    try {
+        events.emit('loading', true)
+        data.value = await getNotices(formattedDate)
+    } catch (e) {
+    } finally {
+        events.emit('loading', false)
+    }
+})
+</script>
 <template>
     <div class="notices">
         <div v-for="(meeting, index) of data.meetings" :key="index" class="notice notice--meeting">
@@ -23,37 +43,6 @@
         </div>
     </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
-import { DUMMY_DATA, getNotices, Notices } from "@/kamar/api";
-import { events } from "@/event";
-
-export default defineComponent({
-    setup() {
-
-        const response = ref<Notices>(DUMMY_DATA.notices)
-
-        onMounted(async () => {
-            const date = new Date()
-            // const formattedDate = format(date, '{dd}/{MM}/{yyyy}')
-            const formattedDate = '10/03/2020'
-            try {
-                events.emit('loading', true)
-                response.value = await getNotices(formattedDate)
-            } catch (e) {
-            } finally {
-                events.emit('loading', false)
-            }
-        })
-
-        return {
-            data: response
-        }
-
-    }
-})
-</script>
 
 <style scoped lang="scss">
 @import "../assets/variables";

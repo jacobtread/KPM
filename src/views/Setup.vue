@@ -1,3 +1,31 @@
+<script setup lang="ts">
+import SchoolIcon from 'vue-material-design-icons/School.vue';
+import ArrowRight from 'vue-material-design-icons/ArrowRight.vue';
+
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+
+import { alert } from "@/event";
+import { abortAll } from "@/kamar/api";
+import { useMainStore } from "@/store";
+
+const store = useMainStore()
+const { push } = useRouter()
+const portalDomain = ref('')
+
+async function setPortal() {
+    const domain = portalDomain.value
+    if (domain.length < 1) {
+        alert('Domain Empty', 'You must provided a domain otherwise you wont be able to access KAMAR')
+        return
+    }
+    await store.setPortal(domain)
+    await push({ name: 'Home' })
+}
+
+abortAll()
+
+</script>
 <template>
     <span class="watermark">KPM by Jacobtread</span>
     <div class="wrapper">
@@ -24,40 +52,6 @@
         </form>
     </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, ref } from "vue";
-import { useStore } from "vuex";
-import { useRouter } from "vue-router";
-import SchoolIcon from 'vue-material-design-icons/School.vue';
-import ArrowRight from 'vue-material-design-icons/ArrowRight.vue';
-import { alert } from "@/event";
-import { abortAll } from "@/kamar/api";
-
-export default defineComponent({
-    components: { SchoolIcon, ArrowRight },
-    setup() {
-        const store = useStore()
-        const { push } = useRouter()
-        const portalDomain = ref('')
-
-        async function setPortal() {
-            const domain = portalDomain.value
-            if (domain.length < 1) {
-                alert('Domain Empty', 'You must provided a domain otherwise you wont be able to access KAMAR')
-                return
-            }
-            await store.dispatch('setPortal', domain)
-            await push({ name: 'Home' })
-        }
-
-        abortAll()
-
-        return { portalDomain, setPortal }
-    }
-})
-</script>
-
 <style scoped lang="scss">
 @import "../assets/variables";
 
